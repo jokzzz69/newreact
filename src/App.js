@@ -9,6 +9,7 @@ import styled from 'styled-components';
 
 
 
+
 const columns = [
     {
       name: 'Station ID',
@@ -60,6 +61,7 @@ const columns = [
       name: 'Latitude',
       selector: row => row.Latitude,
       sortable: true,
+
     },
     {
       name: 'Longitude',
@@ -80,12 +82,13 @@ const columns = [
 
 
 
+
 function App() {
- 
+  
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [data, setData] = useState([]);
-
+  const[q,setQ] = useState("");
   // Note: the empty deps array [] means
   // this useEffect will run once
   // similar to componentDidMount()
@@ -106,6 +109,14 @@ function App() {
         }
       )
   }, [])
+
+  function search(rows){
+    const columns = rows[0] && Object.keys(rows[0])
+    return rows.filter((row) => columns.some((column) => row[column].toString().toLowerCase().indexOf(q) > -1)
+        
+
+    )
+  }
 if (error) {
     return <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
@@ -120,17 +131,26 @@ if (error) {
       <header className="App-header">
         <div className="container-fluid">
         <div className="row">
-          <div className="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">           
-              <span className="fs-4">CAR Sensors</span>     
-          </div>
+           <div className="col mt-2 mb-2">
+              <h2>Hydromet Sensors</h2>
+           </div>
         </div>
+        <div className="row">
+           <div className="col">
+              <input className="form-control-lg form-control mb-2" placeholder="search" type="text" value={q} onChange={(e) => setQ(e.target.value)}/>
+           </div>
+        </div> 
         <div className="row">
            <div className="col">
 
              <DataTable
+             fixedHeader
+              fixedHeaderScrollHeight="100vh"            
+             highlightOnHover
+             pointerOnHover
                 responsive
                 columns={columns}
-                data={data}
+                data={search(data)}
             />
            </div>
         </div>
